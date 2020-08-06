@@ -1,15 +1,22 @@
-# Welcome to your CDK TypeScript project!
+## SQS Experiment
 
-You should explore the contents of this project. It demonstrates a CDK app with an instance of a stack (`BeanworksSqsExperimentStack`)
-which contains an Amazon SQS queue that is subscribed to an Amazon SNS topic.
+### Prerequisites
+Must have AWS CLI and AWS CDK configured properly
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+### How to deploy
+First bootstrap your AWS environment by running `cdk bootstrap` 
+Then running `cdk deploy` will deploy the following:
+  - An API Gateway hooked up to a lambda function (producer)
+  - A FIFO SQS That has a specific message group ID
+  - Another lambda function (consumer)
 
-## Useful commands
+### How to test
+After the cdk deploy is successful, use the API gateway that is created to either do a `curl` or send in browser
 
- * `npm run build`   compile typescript to js
- * `npm run watch`   watch for changes and compile
- * `npm run test`    perform the jest unit tests
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk synth`       emits the synthesized CloudFormation template
+The lambda producer will send messages with data passed in after the `/`. So for example
+```
+curl https://abcdefg.execute-api.us-west-2.amazonaws.com/prod/testing
+```
+will send a SQS message with the content `testing`.
+
+The consumer will automatically pick up the message and prints out the response to Cloudwatch Logs.
