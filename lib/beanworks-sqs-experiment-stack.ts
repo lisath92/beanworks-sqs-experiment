@@ -35,7 +35,8 @@ export class BeanworksSqsExperimentStack extends cdk.Stack {
     const msgConsumer = new lambda.Function(this, 'MessageConsumer', {
       runtime: lambda.Runtime.PYTHON_3_6,
       code: lambda.Code.fromAsset('lambda'),
-      handler: 'consume_message.handler'
+      handler: 'consume_message.handler',
+      timeout: cdk.Duration.seconds(10)
     })
     msgConsumer.addEventSource(new SqsEventSource(queue));
   }
