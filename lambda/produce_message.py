@@ -1,22 +1,32 @@
 import boto3
-import os
 import json
+import os
 
 SQS_CLIENT = boto3.client('sqs')
 
+
 def handler(event, context):
-  event_path = event.get("path")
+  print(event)
+  query_params = event["queryStringParameters"]
+
+  if "/send" == event["path"]:
+    message_body = query_params.get("body", "test sending SQS msg")
+    message_group_id = query_params.get("groupId", "TestingGroupId")
+  else:
+    message_body = "default test SQS msg"
+    message_group_id = "defaultGroupId"
+    
   try:
-    SQS_CLIENT.send_message(
+    message_sent = SQS_CLIENT.send_message(
       QueueUrl=os.getenv("SQS_URL"),
-      MessageBody=f"sending message with the path of {event_path}",
-      MessageGroupId="Testing"
+      MessageBody=message_body,
+      MessageGroupId=message_group_id
     )
-    print("sent message: " + json.dumps(event))
+    print("sent message: " + json.dumps(message_body))
   except Exception as e:
     print("Error sending SQS Message: " + str(e))
     raise
   return {
     'statusCode': 200,
-    'body': f'{event_path} is sent.'
-}
+    'body': f'Message with \"{message_body}\" is sent with GroupID: \"{message_group_id}\". MessageID: {message_sent["MessageId"]}'
+  }
