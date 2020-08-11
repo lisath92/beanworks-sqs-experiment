@@ -25,7 +25,7 @@ test('Both Lambda Functions Created with Properties', () => {
   const stack = new BeanworksSqsExperiment.BeanworksSqsExperimentStack(app, 'TestStack');
 
   expectCDK(stack).to(haveResource("AWS::Lambda::Function", {
-    Timeout: 15
+    Timeout: 10
   }))
   expectCDK(stack).to(haveResource("AWS::Lambda::Function", {
     Environment:{
